@@ -11,6 +11,7 @@ class Player:
     def __init__(self, player_config_data, player_index, batch, group):
         self.speed = relative_display_functions.get_absolute_speed()
         self.current_objective = 0
+        self.total_objectives = 0
         self.player_index = player_index
         self.absolute_x = graph_data.graph_data[global_game_data.current_graph_index][0][0][0]
         self.absolute_y = graph_data.graph_data[global_game_data.current_graph_index][0][0][1]
@@ -25,6 +26,7 @@ class Player:
 
     def reset_player(self):
         self.current_objective = 0
+        self.total_objectives = 0
         self.absolute_x = graph_data.graph_data[global_game_data.current_graph_index][0][0][0]
         self.absolute_y = graph_data.graph_data[global_game_data.current_graph_index][0][0][1]
         self.distance_traveled = 0
@@ -75,6 +77,7 @@ class Player:
             # Go to next object when target is reached
             if self.absolute_x == target_x and self.absolute_y == target_y:
                 self.current_objective += 1
+                self.total_objectives += 1
 
         self.distance_traveled = self.distance_traveled + math.sqrt(math.pow(last_absolute_x-self.absolute_x, 2) + math.pow(last_absolute_y-self.absolute_y, 2))
         self.sprite.visible = (global_game_data.current_player_index == self.player_index)
