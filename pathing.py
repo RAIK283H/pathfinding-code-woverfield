@@ -22,6 +22,10 @@ def get_random_path():
     endIdx = len(graph) - 1
     currentIdx = startIdx
 
+    assert 0 <= global_game_data.current_graph_index < len(graph_data.graph_data), "Graph index must be within graph_data"
+    assert 0 <= global_game_data.target_node[global_game_data.current_graph_index] < len(graph), "Target node index must be within graph"
+
+
     path = []
     path.append(startIdx)
 
@@ -39,6 +43,10 @@ def get_random_path():
         nextIdx = get_adjacent(currentIdx)
         path.append(nextIdx)
         currentIdx = nextIdx
+
+    assert path[0] == startIdx, "Path must start at start index."
+    assert targetIdx in path, "Path must hit target index."
+    assert path[-1] == endIdx, "Path must end at end index."
     
     return path
 
