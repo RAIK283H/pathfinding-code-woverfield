@@ -12,13 +12,14 @@ class Scoreboard:
     player_excess_distance_display = []
     player_path_display = []
     player_objectives_display = []
+    player_rank_display = []
 
     def __init__(self, batch, group):
         self.batch = batch
         self.group = group
-        self.stat_height = 32
+        self.stat_height = 28
         self.stat_width = 400
-        self.number_of_stats = 6
+        self.number_of_stats = 7
         self.base_height_offset = 20
         self.font_size = 16
         self.distance_to_exit_label = pyglet.text.Label('Direct Distance To Exit : 0', x=0, y=0,
@@ -31,6 +32,13 @@ class Scoreboard:
                                                   font_name='Arial',
                                                   font_size=self.font_size, batch=batch, group=group, color=player[2][colors.TEXT_INDEX])
             self.player_name_display.append((player_name_label, player))
+            rank_label = pyglet.text.Label(f"Rank: {index + 1}",
+                                           x=0,
+                                           y=0,
+                                           font_name='Arial',
+                                           font_size=self.font_size, batch=self.batch, group=self.group, color=player[2][colors.TEXT_INDEX]
+            )
+            self.player_rank_display.append((rank_label, player))
             traveled_distance_label = pyglet.text.Label("Distance Traveled:",
                                                         x=0,
                                                         y=0,
@@ -61,10 +69,13 @@ class Scoreboard:
 
     def update_elements_locations(self):
         self.distance_to_exit_label.x = config_data.window_width - self.stat_width
-        self.distance_to_exit_label.y = config_data.window_height - self.stat_height;
+        self.distance_to_exit_label.y = config_data.window_height - self.stat_height
         for index, (display_element, player) in enumerate(self.player_name_display):
             display_element.x = config_data.window_width - self.stat_width
-            display_element.y = config_data.window_height - self.base_height_offset - self.stat_height * 2 - self.stat_height * (index * self.number_of_stats)
+            display_element.y = config_data.window_height - self.base_height_offset - self.stat_height * (index * self.number_of_stats + 1)
+        for index, (rank_label, player) in enumerate(self.player_rank_display):
+            rank_label.x = config_data.window_width - self.stat_width
+            rank_label.y = config_data.window_height - self.base_height_offset - self.stat_height * 2 - self.stat_height * (index * self.number_of_stats)
         for index, (display_element, player) in enumerate(self.player_traveled_display):
             display_element.x = config_data.window_width - self.stat_width
             display_element.y = config_data.window_height - self.base_height_offset - self.stat_height * 3 - self.stat_height * (index * self.number_of_stats)
@@ -111,6 +122,16 @@ class Scoreboard:
                 if player_object.player_config_data == player_configuration_info:
                     display_element.text = "Total Objectives: " + str(player_object.total_objectives)
 
+    def update_rankings(self):
+        sorted_players = sorted(
+            global_game_data.player_objects, 
+            key=lambda p: p.distance_traveled
+        )
+
+        for index, player_object in enumerate(sorted_players):
+            for rank_label, player in self.player_rank_display:
+                if player_object.player_config_data == player:
+                    rank_label.text = f"Rank: {index + 1}"
 
 
     def update_scoreboard(self):
@@ -119,3 +140,4 @@ class Scoreboard:
         self.update_distance_to_exit()
         self.update_distance_traveled()
         self.update_total_objectives()
+        self.update_rankings()
