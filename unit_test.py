@@ -1,7 +1,8 @@
 import math
 import unittest
 from collections import deque
-import graph_data
+import graph_data    
+import permutation
 import global_game_data
 from pathing import get_dfs_path, get_bfs_path
 
@@ -68,6 +69,31 @@ class TestPathFinding(unittest.TestCase):
         expected = [0, 21, 19, 1, 19, 21, 23]
         result = get_bfs_path()
         self.assertEqual(expected, result)
+
+class TestPermutationsHamiltonian(unittest.TestCase):
+    def test_sjt0(self):
+        perms = permutation.getPermutations(0)
+        expected = []
+        self.assertEqual(perms, expected)
+
+    def test_sjt3(self):
+        perms = permutation.getPermutations(3)
+        expected = [[0, 1, 2], [0, 2, 1], [2, 0, 1], [2, 1, 0], [1, 2, 0], [1, 0, 2]]
+        self.assertEqual(perms, expected)
+
+    def test_hamiltonian_cycle(self):
+        graphIndex = 1
+        permutations = permutation.getPermutations(len(graph_data.hamiltonianGraphs[graphIndex]))
+        hamiltonian = permutation.findHamiltonianCycles(graph_data.hamiltonianGraphs[graphIndex], permutations)
+        expected = [[0, 1, 2], [2, 0, 1], [1, 2, 0]]
+        self.assertEqual(hamiltonian, expected)
+
+    def test_no_hamiltonian_cycle(self):
+        graphIndex = 0
+        permutations = permutation.getPermutations(len(graph_data.hamiltonianGraphs[graphIndex]))
+        hamiltonian = permutation.findHamiltonianCycles(graph_data.hamiltonianGraphs[graphIndex], permutations)
+        expected = []
+        self.assertEqual(hamiltonian, expected)
 
 
 if __name__ == '__main__':
