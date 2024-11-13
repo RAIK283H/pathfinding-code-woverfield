@@ -1,6 +1,8 @@
 import graph_data
 import global_game_data
 from numpy import random
+import heapq
+import math
 
 def set_current_graph_paths():
     global_game_data.graph_paths.clear()
@@ -138,4 +140,42 @@ def get_bfs_path():
 
 
 def get_dijkstra_path():
-    return [1,2]
+    graph = graph_data.graph_data[global_game_data.current_graph_index]
+    startIdx = 0
+    targetIdx = global_game_data.target_node[global_game_data.current_graph_index]
+    endIdx = len(graph) - 1
+
+    def dijkstra(start, end):
+        priorityQueue = [(0, start, [start])]
+        distances = {node: float("inf") for node in range(len(graph))}
+        distances[start] = 0
+
+        while priorityQueue:
+            currDistance, currNode, currPath = heapq.heappop(priorityQueue)
+
+            if currNode == end:
+                return currPath
+
+            for neighbor in graph[currNode][1]:
+                def calculate_distance(point1, point2):
+                    x1, y1 = point1
+                    x2, y2 = point2
+                    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+                newDistance = currDistance + calculate_distance(graph[currNode][0], graph[neighbor][0])
+                if newDistance < distances.get(neighbor, float("inf")):
+                    distances[neighbor] = newDistance
+                    heapq.heappush(priorityQueue, (newDistance, neighbor, currPath + [neighbor]))
+
+        return None
+    
+    targetPath = dijkstra(startIdx, targetIdx)
+    endPath = dijkstra(targetIdx, endIdx)
+
+    path = targetPath + endPath[1:]
+
+    assert path[0] == startIdx, "Path must start at start index."
+    assert targetIdx in path, "Path must hit target index."
+    assert path[-1] == endIdx, "Path must end at end index."
+
+    return path
+
