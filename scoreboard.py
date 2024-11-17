@@ -17,7 +17,7 @@ class Scoreboard:
     def __init__(self, batch, group):
         self.batch = batch
         self.group = group
-        self.stat_height = 28
+        self.stat_height = 22
         self.stat_width = 400
         self.number_of_stats = 7
         self.base_height_offset = 20

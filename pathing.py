@@ -169,7 +169,13 @@ def get_dijkstra_path():
         return None
     
     targetPath = dijkstra(startIdx, targetIdx)
+    if targetPath is None:
+        return None
+
     endPath = dijkstra(targetIdx, endIdx)
+    if endPath is None:
+        return None
+
 
     path = targetPath + endPath[1:]
 

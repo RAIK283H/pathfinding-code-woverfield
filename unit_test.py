@@ -4,7 +4,7 @@ from collections import deque
 import graph_data    
 import permutation
 import global_game_data
-from pathing import get_dfs_path, get_bfs_path
+from pathing import get_dfs_path, get_bfs_path, get_dijkstra_path
 
 
 class TestPathFinding(unittest.TestCase):
@@ -94,6 +94,52 @@ class TestPermutationsHamiltonian(unittest.TestCase):
         hamiltonian = permutation.findHamiltonianCycles(graph_data.hamiltonianGraphs[graphIndex], permutations)
         expected = []
         self.assertEqual(hamiltonian, expected)
+
+    def test_get_dijkstra_path_single(self):
+        idx = 0
+        target = 0
+
+        global_game_data.current_graph_index = idx
+        global_game_data.target_node = {idx: target}
+        graph_data.graph_data = [
+                [[(0, 0), []]]
+            ]
+
+        path = get_dijkstra_path()
+        self.assertIsNotNone(path)
+        self.assertEqual(path, [0])
+
+    def test_get_dijkstra_path_no_path(self):
+        idx = 0
+        target = 3
+
+        global_game_data.current_graph_index = idx
+        global_game_data.target_node = {idx: target}
+        graph_data.graph_data = [
+                [[(0, 0), [1]], [(1, 1), [0]], [(2, 2), []], [(3, 3), []]]
+            ]
+
+        path = get_dijkstra_path()
+        self.assertEqual(path, None)
+
+    def test_get_dijkstra_path(self):
+        idx = 0
+        target = 3
+
+        global_game_data.current_graph_index = idx
+        global_game_data.target_node = {idx: target}
+        graph_data.graph_data = [
+                [
+                    [(0, 0), [1, 2]],
+                    [(1, 1), [0, 3]],
+                    [(2, 2), [0, 3]],
+                    [(3, 3), [1, 2]]
+                ]
+            ]
+
+        path = get_dijkstra_path()
+        self.assertIsNotNone(path)
+        self.assertTrue(path in [[0, 1, 3], [0, 2, 3]])
 
 
 if __name__ == '__main__':
