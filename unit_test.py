@@ -1,10 +1,11 @@
 import math
 import unittest
 from collections import deque
-import graph_data    
+import graph_data
 import permutation
 import global_game_data
 from pathing import get_dfs_path, get_bfs_path, get_dijkstra_path
+from f_w import adjacencyToMatrix, floydWarshall, buildPaths
 
 
 class TestPathFinding(unittest.TestCase):
@@ -95,52 +96,61 @@ class TestPermutationsHamiltonian(unittest.TestCase):
         expected = []
         self.assertEqual(hamiltonian, expected)
 
+class TestDijkstra(unittest.TestCase):
     def test_get_dijkstra_path_single(self):
-        idx = 0
+        idx = 9
         target = 0
 
         global_game_data.current_graph_index = idx
         global_game_data.target_node = {idx: target}
-        graph_data.graph_data = [
-                [[(0, 0), []]]
-            ]
 
         path = get_dijkstra_path()
         self.assertIsNotNone(path)
         self.assertEqual(path, [0])
 
     def test_get_dijkstra_path_no_path(self):
-        idx = 0
+        idx = 10
         target = 3
 
         global_game_data.current_graph_index = idx
         global_game_data.target_node = {idx: target}
-        graph_data.graph_data = [
-                [[(0, 0), [1]], [(1, 1), [0]], [(2, 2), []], [(3, 3), []]]
-            ]
 
         path = get_dijkstra_path()
         self.assertEqual(path, None)
 
     def test_get_dijkstra_path(self):
-        idx = 0
+        idx = 11
         target = 3
 
         global_game_data.current_graph_index = idx
         global_game_data.target_node = {idx: target}
-        graph_data.graph_data = [
-                [
-                    [(0, 0), [1, 2]],
-                    [(1, 1), [0, 3]],
-                    [(2, 2), [0, 3]],
-                    [(3, 3), [1, 2]]
-                ]
-            ]
 
         path = get_dijkstra_path()
         self.assertIsNotNone(path)
         self.assertTrue(path in [[0, 1, 3], [0, 2, 3]])
 
+class TestFloydMarshall(unittest.TestCase):
+    def test_floyd_warshall():
+        adjacencyList = {
+            0: [(1, 3), (2, 8)],
+            1: [(3, 1)],
+            2: [(1, 4)],
+            3: [(2, 7)],
+        }
+
+        n = 4
+        graph_matrix = adjacencyToMatrix(adjacencyList, n)
+
+        dist, parent = floydWarshall(graph_matrix)
+
+        assert dist[0][3] == 4, "Path from 0 to 3 should have cost 4"
+        assert dist[1][2] == 8, "Path from 1 to 2 should have cost 8"
+        assert dist[0][2] == 8, "Path from 0 to 2 should have cost 8"
+
+        path_0_to_3 = buildPaths(parent, 0, 3)
+        assert path_0_to_3 == [0, 1, 3], f"Path from 0 to 3 should be [0, 1, 3], got {path_0_to_3}"
+
+        print("All tests passed!")
 
 if __name__ == '__main__':
     unittest.main()
