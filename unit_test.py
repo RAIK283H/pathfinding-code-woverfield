@@ -129,8 +129,8 @@ class TestDijkstra(unittest.TestCase):
         self.assertIsNotNone(path)
         self.assertTrue(path in [[0, 1, 3], [0, 2, 3]])
 
-class TestFloydMarshall(unittest.TestCase):
-    def test_floyd_warshall():
+class TestFloydWarshall(unittest.TestCase):
+    def test_floyd_warshall_basic(self):
         adjacencyList = {
             0: [(1, 3), (2, 8)],
             1: [(3, 1)],
@@ -143,14 +143,50 @@ class TestFloydMarshall(unittest.TestCase):
 
         dist, parent = floydWarshall(graph_matrix)
 
-        assert dist[0][3] == 4, "Path from 0 to 3 should have cost 4"
-        assert dist[1][2] == 8, "Path from 1 to 2 should have cost 8"
-        assert dist[0][2] == 8, "Path from 0 to 2 should have cost 8"
+        self.assertEqual(dist[0][3], 4)
+        self.assertEqual(dist[1][2], 8)
+        self.assertEqual(dist[0][2], 8)
 
-        path_0_to_3 = buildPaths(parent, 0, 3)
-        assert path_0_to_3 == [0, 1, 3], f"Path from 0 to 3 should be [0, 1, 3], got {path_0_to_3}"
+        path = buildPaths(parent, 0, 3)
+        self.assertEqual(path, [0, 1, 3])
 
-        print("All tests passed!")
+    def test_floyd_warshall_negative_weights(self):
+        adjacencyList = {
+            0: [(1, 3)],
+            1: [(2, -2)],
+            2: [(3, 2)],
+            3: [(0, -1)],
+        }
+
+        n = 4
+        graph_matrix = adjacencyToMatrix(adjacencyList, n)
+
+        dist, parent = floydWarshall(graph_matrix)
+
+        self.assertEqual(dist[0][2], 1)
+        self.assertEqual(dist[1][3], 0)
+
+        path = buildPaths(parent, 0, 2)
+        self.assertEqual(path, [0, 1, 2])
+
+    def test_floyd_warshall_complete_graph(self):
+        adjacencyList = {
+            0: [(1, 1), (2, 2), (3, 3)],
+            1: [(0, 1), (2, 1), (3, 2)],
+            2: [(0, 2), (1, 1), (3, 1)],
+            3: [(0, 3), (1, 2), (2, 1)],
+        }
+
+        n = 4
+        graph_matrix = adjacencyToMatrix(adjacencyList, n)
+
+        dist, parent = floydWarshall(graph_matrix)
+
+        self.assertEqual(dist[0][3], 3)
+        self.assertEqual(dist[1][2], 1)
+
+        path = buildPaths(parent, 0, 3)
+        self.assertEqual(path, [0, 3])
 
 if __name__ == '__main__':
     unittest.main()
